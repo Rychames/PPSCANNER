@@ -11,8 +11,10 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
   const router = useRouter();
   const pathname = usePathname();
   const { logout, user } = useAuth();
-  const isCompanyPage = pathname?.startsWith("/companies/");
-  const companyId = pathname?.split("/")[2];
+
+  // Verifica se a rota é uma página de empresa: espera-se que seja "/companies/[companyId]/..."
+  const isCompanyPage = pathname ? pathname.startsWith("/companies/") && pathname.split("/").length > 2 : false;
+  const companyId = isCompanyPage ? pathname.split("/")[2] : null;
 
   const { filters, setFilters } = useFilter();
 
@@ -125,8 +127,7 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                           </p>
                         </div>
                         <ul className="py-1" role="none">
-                          {/* Adiciona o link para a tela de administração se o usuário for ADMIN ou MODERATOR */}
-                          {(user?.role === 'ADMIN' || user?.role === 'MODERATOR') && (
+                          {(user?.role === "ADMIN" || user?.role === "MODERATOR") && (
                             <li>
                               <Link
                                 href="/admin"
@@ -154,7 +155,6 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
               </div>
             </div>
           </nav>
-          {/* Removemos a opção de Administração do Sidebar */}
           <aside
             id="logo-sidebar"
             className={`no-print fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -164,8 +164,13 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
             <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
               <ul className="space-y-2 font-medium">
                 <li>
+                  {/* Ajuste do link do dashboard: se estiver em uma página de empresa, aponta para a rota dentro de companies */}
                   <Link
-                    href="/dashboard"
+                    href={
+                      isCompanyPage && companyId
+                        ? `/companies/${companyId}/dashboard`
+                        : "/dashboard"
+                    }
                     className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                   >
                     <svg
@@ -181,8 +186,8 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                     <span className="ms-3">Dashboard</span>
                   </Link>
                 </li>
-                {/* Outras opções do sidebar permanecem inalteradas */}
-                {isCompanyPage && (
+                {/* Se estiver em uma página de empresa, exibe opções para gerenciamento */}
+                {isCompanyPage && companyId && (
                   <li className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="px-2">
                       <span className="text-gray-500 dark:text-gray-400 text-sm font-light">
@@ -195,7 +200,6 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                         >
                           <svg
                             className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                            aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 18 18"
@@ -216,7 +220,6 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                         >
                           <svg
                             className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                            aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="currentColor"
                             viewBox="0 0 18 20"
@@ -229,7 +232,6 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                     </div>
                   </li>
                 )}
-                {/* ... Outros itens do sidebar ... */}
                 <li>
                   <Link
                     href="/companies"
@@ -237,7 +239,6 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                   >
                     <svg
                       className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                      aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
                       viewBox="0 0 18 18"
@@ -254,7 +255,6 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                   >
                     <svg
                       className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                      aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 20 20"

@@ -8,8 +8,7 @@ import {
   UserModel,
   UserRole,
   UpdateSendFormUserManagerModel,
-  handleError,
-  isApiError
+  handleError
 } from '@/app/models/user.model';
 import { BASE_URL } from '@/app/utils/constants';
 import { FiRefreshCw, FiTrash2, FiToggleLeft, FiToggleRight, FiSearch } from 'react-icons/fi';
@@ -49,6 +48,19 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('user/manager/');
+        const userData = response.data['data'];
+        setUsers(userData);
+      } catch (error) {
+        console.error('Erro ao buscar os usuários:', error);
+        alert('Ocorreu um erro ao buscar os usuários.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUsers();
   }, []);
 

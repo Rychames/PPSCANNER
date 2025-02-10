@@ -4,16 +4,14 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useRouter, usePathname } from 'next/navigation';
 import axios from 'axios';
 import { BASE_URL } from '@/app/utils/constants';
-import { UserModel, handleError, isAdmin, isApiError, isCommon, isModerator } from '@/app/models/user.model';
+import { UserModel, handleError, isApiError } from '@/app/models/user.model';
+import { userExtras } from "@/app/models/user.model";
 
 type AuthContextType = {
   user: UserModel | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  isAdmin: boolean;
-  isModerator: boolean;
-  isCommon: boolean;
   setUser: React.Dispatch<React.SetStateAction<UserModel | null>>;
 };
 
@@ -47,10 +45,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(accessToken);
       localStorage.setItem('authToken', accessToken);
 
-      const userResponse = await axios.get('user/profile/');
-      setUser(userResponse.data.data);
-      router.push('/');
-    } catch (error) {
+      const userResponse = await axios.get('user/profile/'); 
+      const userData: UserModel = await userResponse.data['data'];
+
+      setUser(userExtras(userData));
+
+      router.push("/");
+    }
+    catch (error: any) {
       const handledError = handleError(error);
       throw new Error(handledError.message);
     }
@@ -99,9 +101,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     token,
     login,
     logout,
-    isAdmin: isAdmin(user),
-    isModerator: isModerator(user),
-    isCommon: isCommon(user),
     setUser,
   };
 

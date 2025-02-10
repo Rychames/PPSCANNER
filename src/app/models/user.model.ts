@@ -1,5 +1,3 @@
-export type UserRole = 'COMMON' | 'MODERATOR' | 'ADMIN';
-
 export interface SendFormUserManagerModel {
     role: UserRole;
     is_active: boolean;
@@ -11,20 +9,42 @@ export interface SendFormUserModel {
     last_name: string;
 }
 
+export interface UserModel{
+    id?: number,
+    profile_image: string,
+    email: string,
+    first_name: string,
+    last_name: string,
+    role: UserRole,
+    is_active: boolean,
+
+    isAdmin(): boolean;
+    isModerator(): boolean;
+    isCommon(): boolean;
+}
+
 export type UpdateSendFormUserManagerModel = Partial<SendFormUserManagerModel>;
 export type UpdateSendFormUserModel = Partial<SendFormUserModel>;
 
-export interface UserModel {
-    id?: number;
-    profile_image: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    role: UserRole;
-    is_active: boolean;
+export type UserRole = 'COMMON' | 'MODERATOR' | 'ADMIN';
+
+export function userExtras(user: UserModel): UserModel {
+    user.isAdmin = function () {
+        return user?.role === 'ADMIN';
+    }
+    
+    user.isModerator = function () {
+        return user?.role === 'MODERATOR' || user?.role === 'ADMIN';
+    }
+    
+    user.isCommon = function () {
+        return user?.role === 'COMMON';
+    }
+
+    return user
+
 }
 
-// Type guards e utilitários de erro
 export interface ApiError {
     message: string;
     status?: number;

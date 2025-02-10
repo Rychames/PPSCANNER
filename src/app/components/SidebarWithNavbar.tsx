@@ -18,7 +18,6 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
 
   const { filters, setFilters } = useFilter();
 
-  // Funções de filtro (mantidas do exemplo original)
   const handleOnlyQRCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = e.target;
     setFilters((prev) => ({
@@ -45,15 +44,18 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
         setIsSidebarOpen(false);
       }
     };
+
     const handleClickOutside = (event: MouseEvent) => {
       const dropdown = document.getElementById("dropdown-user");
       if (dropdown && !dropdown.contains(event.target as Node)) {
         setIsUserDropdownOpen(false);
       }
     };
+
     handleResize();
     window.addEventListener("resize", handleResize);
     document.addEventListener("mousedown", handleClickOutside);
+    
     return () => {
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("mousedown", handleClickOutside);
@@ -270,6 +272,33 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                     <span className="ms-3">Configurações</span>
                   </Link>
                 </li>
+                {user !== null && user.isModerator() ? (
+                  <li>
+                    <Link
+                      href="/admin"
+                      className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                    >
+                      <svg
+                        className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M7.75 4H19M7.75 4a2.25 2.25 0 0 1-4.5 0m4.5 0a2.25 2.25 0 0 0-4.5 0M1 4h2.25m13.5 6H19m-2.25 0a2.25 2.25 0 0 1-4.5 0m4.5 0a2.25 2.25 0 0 0-4.5 0M1 10h11.25m-4.5 6H19M7.75 16a2.25 2.25 0 0 1-4.5 0m4.5 0a2.25 2.25 0 0 0-4.5 0M1 16h2.25"
+                        />
+                      </svg>
+                      <span className="ms-3">Tela de Admistração</span>
+                    </Link>
+                  </li>
+                ): (
+                  <></>
+                )}
               </ul>
             </div>
           </aside>

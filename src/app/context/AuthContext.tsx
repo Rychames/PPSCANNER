@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push('/login');
   }, [router]);
 
+  // In the login function
   const login = useCallback(async (email: string, password: string) => {
     try {
       const response = await axios.post('user/login/', { email, password });
@@ -48,8 +49,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const userResponse = await axios.get('user/profile/'); 
       const userData: UserModel = await userResponse.data['data'];
 
-      setUser(userExtras(userData));
-
+      const userWithExtras = userExtras(userData);
+      setUser(userWithExtras);
+      
       router.push("/");
     }
     catch (error: any) {
@@ -68,8 +70,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       try {
         axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-        const userResponse = await axios.get('user/profile/');
-        setUser(userResponse.data.data);
+
+        const userResponse = await axios.get('user/profile/'); 
+        const userData: UserModel = await userResponse.data['data'];
+  
+        const userWithExtras = userExtras(userData);
+        setUser(userWithExtras);
         setToken(storedToken);
       } catch (error) {
         if (isApiError(error) && error.status === 401) {

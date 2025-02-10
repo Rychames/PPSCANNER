@@ -22,23 +22,16 @@ export function middleware(request: NextRequest) {
     "/companies",
   ];
 
-  // Permite qualquer rota dentro de /companies/[id]/
   const isCompanyRoute = pathname.startsWith("/companies/");
-
-  // Verifica se a rota é válida
   const isRouteValid = validRoutes.includes(pathname) || isCompanyRoute;
-
-  // Redireciona para not-found se a rota não for válida
   if (!isRouteValid) {
     return NextResponse.redirect(new URL("/not-found", request.url));
   }
 
-  // Redireciona usuários logados que tentam acessar rotas públicas
   if (publicRoutes.includes(pathname) && token) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Bloqueia acesso a rotas privadas sem token
   if (!publicRoutes.includes(pathname) && !token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

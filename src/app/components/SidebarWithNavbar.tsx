@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useParams } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import Link from "next/link";
 import { useFilter } from "@/app/context/FilterContext";
@@ -12,9 +12,11 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
   const pathname = usePathname();
   const { logout, user } = useAuth();
 
-  // Verifica se a rota é uma página de empresa: espera-se que seja "/companies/[companyId]/..."
-  const isCompanyPage = pathname ? pathname.startsWith("/companies/") && pathname.split("/").length > 2 : false;
-  const companyId = isCompanyPage ? pathname.split("/")[2] : null;
+  const params = useParams(); 
+  const companyId = params?.companyId ?? null;
+
+  // 🔹 Verifica se está dentro de uma página de empresa
+  const isCompanyPage = pathname?.startsWith("/companies/") && !!companyId;
 
   const { filters, setFilters } = useFilter();
 
@@ -62,6 +64,7 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
     };
   }, []);
 
+
   const toggleSidebar = () => {
     if (window.innerWidth < 1024) {
       setIsSidebarOpen(!isSidebarOpen);
@@ -71,6 +74,10 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
   const publicRoutes = ["/login", "/signup", "/VerifyCodePage", "/not-found"];
   const isPublicPage = publicRoutes.includes(pathname);
 
+  if(user === null){
+    return <></>
+    
+  } else {
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${isPublicPage ? "justify-center" : ""}`}>
       {!isPublicPage && (
@@ -272,7 +279,7 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                     <span className="ms-3">Configurações</span>
                   </Link>
                 </li>
-                {user !== null && user.isModerator() ? (
+                {user.isModerator() ? (
                   <li>
                     <Link
                       href="/admin"
@@ -311,6 +318,7 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
       </div>
     </div>
   );
+}
 };
 
 export default SidebarWithNavbar;

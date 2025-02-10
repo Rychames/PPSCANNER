@@ -9,7 +9,7 @@ export interface SendFormUserModel {
     last_name: string;
 }
 
-export interface UserModel{
+export interface UserModel {
     id?: number,
     profile_image: string,
     email: string,
@@ -28,22 +28,21 @@ export type UpdateSendFormUserModel = Partial<SendFormUserModel>;
 
 export type UserRole = 'COMMON' | 'MODERATOR' | 'ADMIN';
 
-export function userExtras(user: UserModel): UserModel {
+export function userExtras(user: UserModel): UserModel { 
     user.isAdmin = function () {
-        return user?.role === 'ADMIN';
-    }
-    
+      return this.role === 'ADMIN';
+    };
+  
     user.isModerator = function () {
-        return user?.role === 'MODERATOR' || user?.role === 'ADMIN';
-    }
-    
+      return this.role === 'MODERATOR' || this.role === 'ADMIN';
+    };
+  
     user.isCommon = function () {
-        return user?.role === 'COMMON';
-    }
+      return this.role === 'COMMON';
+    };
 
-    return user
-
-}
+    return user;
+  }
 
 export interface ApiError {
     message: string;
@@ -59,16 +58,4 @@ export function handleError(error: unknown): ApiError {
     if (isApiError(error)) return error;
     if (error instanceof Error) return { message: error.message };
     return { message: 'Erro desconhecido' };
-}
-
-export function isAdmin(user: UserModel | null): user is UserModel {
-    return user?.role === 'ADMIN';
-}
-
-export function isModerator(user: UserModel | null): user is UserModel {
-    return user?.role === 'MODERATOR' || isAdmin(user);
-}
-
-export function isCommon(user: UserModel | null): user is UserModel {
-    return user?.role === 'COMMON';
 }

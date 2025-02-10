@@ -8,7 +8,8 @@ import {
   UserModel,
   UserRole,
   UpdateSendFormUserManagerModel,
-  handleError
+  handleError,
+  SendFormUserManagerModel
 } from '@/app/models/user.model';
 import { BASE_URL } from '@/app/utils/constants';
 import { FiRefreshCw, FiTrash2, FiToggleLeft, FiToggleRight, FiSearch } from 'react-icons/fi';
@@ -36,7 +37,7 @@ export default function AdminPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}user/manager/`);
+      const response = await axios.get('user/manager/');
       setUsers(response.data.data);
     } catch (error) {
       const handledError = handleError(error);
@@ -71,8 +72,8 @@ export default function AdminPage() {
 
   const toggleUserActivation = async (id: number) => {
     try {
-      const user = users.find(u => u.id === id);
-      if (!user || user.role === 'ADMIN') return;
+      const user = users.find(user => user.id === id);
+      if (!user || user.isAdmin()) return;
 
       const newStatus = !user.is_active;
       const payload: UpdateSendFormUserManagerModel = { is_active: newStatus };
@@ -92,7 +93,7 @@ export default function AdminPage() {
 
   const deleteUser = async (id: number) => {
     try {
-      await axios.delete(`${BASE_URL}user/manager/${id}`);
+      await axios.delete(`user/manager/${id}`);
       setUsers(users.filter(user => user.id !== id));
       toast.success('Usuário deletado!');
     } catch (error) {
@@ -106,7 +107,14 @@ export default function AdminPage() {
   const updateUserRole = async (id: number, newRole: UserRole) => {
     try {
       const payload: UpdateSendFormUserManagerModel = { role: newRole };
-      await axios.patch(`${BASE_URL}user/manager/${id}/`, payload);
+      //const payload2: SendFormUserManagerModel = { role: newRole, is_active: false};
+      const response = await axios.put(`user/manager/${id}/`, payload);
+
+      const response_role: string = response.data.data.role; 
+      console.log(response_role);
+      if (response_role !== newRole) {
+        throw new Error("Erro ao atualizar a permissão do usuário");
+      }
 
       const updatedUsers = users.map(user =>
         user.id === id ? { ...user, role: newRole } : user
@@ -120,7 +128,7 @@ export default function AdminPage() {
       toast.success(`Permissão atualizada para ${newRole}!`);
     } catch (error) {
       const handledError = handleError(error);
-      console.error('Detalhes do erro:', handledError);
+      //console.error('Detalhes do erro:', handledError);
       toast.error(handledError.message);
       setUsers([...users]);
     }
@@ -154,8 +162,8 @@ export default function AdminPage() {
 
           <button
             onClick={() => toggleUserActivation(user.id!)}
-            className={`flex items-center gap-2 ${user.role === 'ADMIN' ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={user.role === 'ADMIN'}
+            className={`flex items-center gap-2 ${user.isAdmin() ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={user.isAdmin()}
           >
             {user.is_active ? (
               <>
@@ -173,8 +181,8 @@ export default function AdminPage() {
 
         <button
           onClick={() => setDeleteConfirmation(user.id!)}
-          className={`text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 ${user.role === 'ADMIN' ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={user.role === 'ADMIN'}
+          className={`text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 ${user.isAdmin() ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={user.isAdmin()}
         >
           <FiTrash2 className="text-xl" />
         </button>

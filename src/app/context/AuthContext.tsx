@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import axios from "axios";
 import { BASE_URL } from "@/app/utils/constants";
 import { UserModel } from "@/app/models";
+import { userExtras } from "@/app/models/user.model";
 
 type AuthContextType = {
   user: UserModel | null;
@@ -44,14 +45,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const accessToken = data.access;
 
       axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      
       setToken(accessToken);
       localStorage.setItem("authToken", accessToken);
 
-      const userResponse = await axios.get('user/profile/');
-      setUser(userResponse.data['data']);
+      const userResponse = await axios.get('user/profile/'); 
+      const userData: UserModel = await userResponse.data['data'];
+
+      setUser(userExtras(userData));
       router.push("/");
-    } catch (error: any) {
+    }
+    catch (error: any) {
       throw new Error(
         error.response?.data?.message || "Erro ao fazer login"
       );

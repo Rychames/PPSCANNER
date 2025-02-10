@@ -17,13 +17,11 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
 
   const { filters, setFilters } = useFilter();
 
-  // Quando o filtro onlyQRCode for selecionado, podemos atualizar os outros para false (opcional)
   const handleOnlyQRCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = e.target;
     setFilters((prev) => ({
       ...prev,
       onlyQRCode: checked,
-      // Se o usuário marcar "Somente QR Code", desabilitamos/desmarcamos os outros filtros
       showProductDetails: checked ? false : prev.showProductDetails,
       showUserInfo: checked ? false : prev.showUserInfo,
       showCompanyInfo: checked ? false : prev.showCompanyInfo,
@@ -31,7 +29,7 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
     }));
   };
 
-  // Para os demais filtros, se onlyQRCode estiver ativo, eles ficam desabilitados
+
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     if (filters.onlyQRCode) return;
@@ -46,15 +44,18 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
         setIsSidebarOpen(false);
       }
     };
+
     const handleClickOutside = (event: MouseEvent) => {
       const dropdown = document.getElementById("dropdown-user");
       if (dropdown && !dropdown.contains(event.target as Node)) {
         setIsUserDropdownOpen(false);
       }
     };
+
     handleResize();
     window.addEventListener("resize", handleResize);
     document.addEventListener("mousedown", handleClickOutside);
+    
     return () => {
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("mousedown", handleClickOutside);
@@ -325,7 +326,7 @@ const SidebarWithNavbar: React.FC<{ children: React.ReactNode }> = ({ children }
                     <span className="ms-3">Configurações</span>
                   </Link>
                 </li>
-                {user !== null && user?.role === 'ADMIN' ? (
+                {user !== null && user.isModerator() ? (
                 <li>
                   <Link
                     href="/admin"

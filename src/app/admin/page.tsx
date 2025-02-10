@@ -13,7 +13,7 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}user/manager/`);
+        const response = await axios.get('user/manager/');
         const userData = response.data['data'];
         setUsers(userData);
       } catch (error) {

@@ -8,7 +8,4 @@ export type {
     SendFormUserModel,
     UserModel,
     UserRole,
-    isAdmin,
-    isModerator,
-    isCommon,
 } from '@/app/models/user.model'

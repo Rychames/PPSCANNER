@@ -73,7 +73,7 @@ export default function AdminPage() {
   const toggleUserActivation = async (id: number) => {
     try {
       const user = users.find(user => user.id === id);
-      if (!user || user.isAdmin()) return;
+      if (!user || user.role == 'ADMIN') return;
 
       const newStatus = !user.is_active;
       const payload: UpdateSendFormUserManagerModel = { is_active: newStatus };
@@ -128,7 +128,7 @@ export default function AdminPage() {
       toast.success(`Permissão atualizada para ${newRole}!`);
     } catch (error) {
       const handledError = handleError(error);
-      //console.error('Detalhes do erro:', handledError);
+      console.error('Detalhes do erro:', handledError);
       toast.error(handledError.message);
       setUsers([...users]);
     }
@@ -162,8 +162,8 @@ export default function AdminPage() {
 
           <button
             onClick={() => toggleUserActivation(user.id!)}
-            className={`flex items-center gap-2 ${user.isAdmin() ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={user.isAdmin()}
+            className={`flex items-center gap-2 ${user.role == 'ADMIN' ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={user.role == 'ADMIN'}
           >
             {user.is_active ? (
               <>
@@ -181,8 +181,8 @@ export default function AdminPage() {
 
         <button
           onClick={() => setDeleteConfirmation(user.id!)}
-          className={`text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 ${user.isAdmin() ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={user.isAdmin()}
+          className={`text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 ${user.role == 'ADMIN' ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={user.role == 'ADMIN'}
         >
           <FiTrash2 className="text-xl" />
         </button>

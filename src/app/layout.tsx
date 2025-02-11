@@ -1,10 +1,10 @@
 import "./globals.css";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
-import { AuthProvider } from "@/app/context/AuthContext";
-import SidebarWithNavbar from "./components/SidebarWithNavbar";
-import { FilterProvider } from "./context/FilterContext";
+import { AuthProvider } from "@/context/AuthContext";
+import SidebarWithNavbar from "@/components/SidebarWithNavbar";
+import { FilterProvider } from "@/context/FilterContext";
 
 export const metadata = {
   title: "PPSCANNER",
